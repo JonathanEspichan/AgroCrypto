@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -21,7 +21,6 @@
     "@metamask/logo": "^3.1.2",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
-    "@nicky-lenaers/ngx-scroll-to": "^14.0.0",
     "agro-crypto": "file:",
     "bootstrap": "^5.3.3",
     "rxjs": "~7.8.0",
