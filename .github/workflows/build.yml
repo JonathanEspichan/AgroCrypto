@@ -1,10 +1,12 @@
 name: Build
+
 on:
   push:
     branches:
       - develop
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -12,9 +14,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  docker-image-build-push:
+    name: Build and Deploy Docker Image
+    runs-on: ubuntu-latest
+    needs: sonarcloud  # Ensures SonarCloud analysis is complete before proceeding.
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Disable CI-related warnings
+        run: |
+          echo "CI=false" >> $GITHUB_ENV  # Disables strict CI warnings for a smoother workflow.
+
+      - name: DockerHub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t jonathanespichanquinto/agrocrypto${{ github.sha }} .
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          docker push jonathanespichanquinto/agrocrypto${{ github.sha }}
