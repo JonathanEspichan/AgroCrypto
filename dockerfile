@@ -1,28 +1,24 @@
-# Stage 1: Build Angular app with a smaller Node.js base image
-FROM node:20-alpine AS build
+# Stage 1: Build Angular app with Node.js
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copiar solo package.json y package-lock.json
+# Copia los archivos de package para instalar las dependencias
 COPY package*.json ./
+RUN npm install
 
-# Instalar dependencias de producción y limpiar caché de npm
-RUN npm ci --only=production && npm cache clean --force
-
-# Copiar el resto de los archivos del proyecto
+# Copia el resto de los archivos del proyecto
 COPY . .
 
-# Compilar la aplicación Angular para producción
+# Compila la aplicación Angular en modo producción
 RUN npm run build --prod
 
-# Stage 2: Nginx para servir la aplicación
+# Stage 2: Serve app with Nginx
 FROM nginx:alpine
+COPY --from=builder /app/dist/agro-crypto /usr/share/nginx/html
 
-# Copiar los archivos de la build de Angular desde el contenedor de construcción
-COPY --from=build /app/dist/agro-crypto /usr/share/nginx/html
-
-# Exponer el puerto 80
+# Expone el puerto 80 para Nginx
 EXPOSE 80
 
-# Comando predeterminado para Nginx
+# Comando por defecto para iniciar Nginx
 CMD ["nginx", "-g", "daemon off;"]
