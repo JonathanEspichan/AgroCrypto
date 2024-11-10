@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: jonathanespichanquinto/agrocrypto:latest
+    ports:
+      - "8080:80"
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # Limita la memoria máxima que puede usar el contenedor
+        reservations:
+          memory: 256M  # Reserva memoria mínima para el contenedor
+    restart: always  # Configura el contenedor para reiniciarse automáticamente si falla
+    networks:
+      - frontend_network  # Conecta el contenedor a una red personalizada (opcional)
+
+networks:
+  frontend_network:
+    driver: bridge  # Red predeterminada (puedes personalizarla si es necesario)
