@@ -41,8 +41,8 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t jonathanespichanquinto/agrocrypto${{ github.sha }} .
+          docker build -t jonathanespichanquinto/agrocrypto:${{ github.sha }} .
 
       - name: Push Docker Image to DockerHub
         run: |
-          docker push jonathanespichanquinto/agrocrypto${{ github.sha }}
+          docker push jonathanespichanquinto/agrocrypto:${{ github.sha }}
